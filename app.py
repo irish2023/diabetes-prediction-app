@@ -25,5 +25,13 @@ def predict():
     # Return the result
     return jsonify({"prediction": result})
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Import the os module to access environment variables
+    import os
+
+    # Get the PORT from the environment or default to 8000
+    port = int(os.environ.get("PORT", 8000))
+
+    # Run the Flask app
+    app.run(host="0.0.0.0", port=port)
