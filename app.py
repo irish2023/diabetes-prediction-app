@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import joblib
 import numpy as np
 
@@ -7,6 +8,7 @@ model = joblib.load("diabetes_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def home():
@@ -15,21 +17,17 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
-        # Get input data from the request
         data = request.get_json()
         features = np.array(data["features"]).reshape(1, -1)
-        
-        # Scale the input features
+
         scaled_features = scaler.transform(features)
-        
-        # Make prediction
+
         prediction = model.predict(scaled_features)[0]
         result = "Diabetic" if prediction == 1 else "Not Diabetic"
-        
-        # Return the result
+
         return jsonify({"prediction": result})
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     import os
